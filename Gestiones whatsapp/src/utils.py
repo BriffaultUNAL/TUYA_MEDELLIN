@@ -23,11 +23,9 @@ from src.telegram_bot import enviar_mensaje
 import subprocess
 import asyncio
 import zipfile
-from datetime import datetime, timedelta
+from datetime import datetime
 import datetime as dt
 import calendar
-from unidecode import unidecode
-
 
 act_dir = os.path.dirname(os.path.abspath(__file__))
 proyect_dir = os.path.join(act_dir, '..')
@@ -49,10 +47,11 @@ first_day_week = today - dt.timedelta(days=today.weekday())
 first_day_week = first_day_week.day
 today = today.day
 
-
 print(first_day_week)
 
-last_day = calendar.monthrange(current_year, current_month)[1]
+last_day = calendar.monthrange(current_year, current_month-1)[1]
+
+print(last_day)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -82,7 +81,7 @@ class Engine_sql:
         self.port = port
 
     def get_engine(self) -> Engine:
-        return sa.create_engine(f"mysql+pymysql://{self.user}:{quote(self.passw)}@{self.host}:{self.port}/{self.dat}?autocommit=true")
+        return sa.create_engine(f"mysql+pymysql://{self.user}:{quote(self.passw)}@{self.host}:{self.port}/{self.dat}")
 
     def get_connect(self) -> Connection:
         return self.get_engine().connect()
@@ -124,7 +123,7 @@ def webscraping(import_username: str, import_password: str, *_):
 
         action_chains = ActionChains(driver)
 
-        asyncio.run(enviar_mensaje(f'Tuya Agencia contacto'))
+        asyncio.run(enviar_mensaje(f'Tuya whatsapp'))
 
         subprocess.run(['cmd', '/c', 'del', '/Q',
                         os.path.join(act_dir, 'file') + '\\*'])
@@ -146,54 +145,56 @@ def webscraping(import_username: str, import_password: str, *_):
         password.send_keys(import_password)
         password.send_keys(Keys.ENTER)
 
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='dialog']/div[3]/table/tbody/tr[6]/td[2]/a"))).click()
 
         driver.get(
             """https://172.226.124.46/vsmart/index.php?rtr=informes&ctr=informeSeguimiento&titulocriterio=Resumen%20de%20Seguimiento%20por%20Agencia&acc=""")
 
-        WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "select2-chosen"))).click()
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "select2-container"))).click()
 
-        WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[20]/div"))).click()
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[26]/div"))).click()
 
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "s2id_col"))).click()
 
-        WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[54]/div"))).click()
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[57]/div"))).click()
 
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='s2id_ope']/a/span[1]"))).click()
 
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[13]"))).click()
 
-        if int(today) < int(first_day_week):
+        if int(today) in [1, 2, 3]:
 
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
 
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[1]/a[1]/span"))).click()
 
-            calendario = WebDriverWait(driver, 60).until(
+            calendario = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/table/tbody")))
 
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{first_day_week}':
+                if day.text == f'{int(last_day-5)}':
                     day.click()
 
-            WebDriverWait(driver, 60).until(
+            time.sleep(2)
+
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
 
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[1]/a[2]/span"))).click()
 
-            calendario = WebDriverWait(driver, 60).until(
+            calendario = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/table/tbody")))
 
             days = calendario.find_elements(By.TAG_NAME, "a")
@@ -201,33 +202,30 @@ def webscraping(import_username: str, import_password: str, *_):
             for day in days:
                 if day.text == f'{today}':
                     day.click()
-
-            """element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button")))
-
-            action_chains.double_click(element).perform()"""
 
         else:
 
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
 
-            calendario = WebDriverWait(driver, 60).until(
+            calendario = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/table/tbody")))
 
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{first_day_week}':
+                if day.text == f'{int(today)-8}':
                     day.click()
 
-            WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]"))).click()
+            element = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]")))
 
-            WebDriverWait(driver, 60).until(
+            action_chains.double_click(element).perform()
+
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
 
-            calendario = WebDriverWait(driver, 60).until(
+            calendario = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/table/tbody")))
 
             days = calendario.find_elements(By.TAG_NAME, "a")
@@ -236,46 +234,80 @@ def webscraping(import_username: str, import_password: str, *_):
                 if day.text == f'{today}':
                     day.click()
 
-            """element = WebDriverWait(driver, 10).until(
+            element = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]")))
 
-            action_chains.double_click(element).perform()"""
+            action_chains.double_click(element).perform()
 
-        time.sleep(2)
+        """WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, "ui-datepicker-div")))
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[1]")))
+
+        element = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]")))
+
+        action_chains.double_click(element).perform()"""
+
+        time.sleep(5)
         try:
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnAgregarCriterio .ui-icon-plus"))).click()
         except Exception as e:
             print(e)
 
-        WebDriverWait(driver, 60).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "add_tab"))).click()
 
-        WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div[2]/table/tbody/tr[4]/td[1]/input"))).click()
+        """WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div[2]/table/tbody/tr[29]/td[1]/input"))).click()"""
 
-        WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "select2-container"))).click()
+        table = WebDriverWait(driver, 90).until(EC.presence_of_element_located(
+            (By.XPATH, '/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div[2]/table')))
 
-        WebDriverWait(driver, 60).until(
+        logging.info(f"a{table}")
+
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+
+        logging.info(f"b{rows}")
+        for row in rows:
+            cells = row.find_elements(By.TAG_NAME, 'td')
+            if len(cells) > 1:
+                agrupador = cells[1].text.strip()
+                if agrupador == "Envio gestión virtual WhatsApp":
+                    checkbox = row.find_element(By.TAG_NAME, 'input')
+                    checkbox.click()
+                    break
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='s2id_agrupador']"))).click()
+
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[56]/div"))).click()
-        time.sleep(10)
-        WebDriverWait(driver, 60).until(
+
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "add_tab"))).click()
 
-        WebDriverWait(driver, 120).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[4]/div/div[2]/a[3]"))).click()
 
-        WebDriverWait(driver, 120).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[4]/div/div/span[1]/a[1]"))).click()
+###################################
+        """WebDriverWait(driver, 90).until(
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div/div[2]/a[3]"))).click()"""
 
-        WebDriverWait(driver, 120).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[4]/div/div/div[3]/form/div[4]/input[1]"))).click()
+        WebDriverWait(driver, 90).until(
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[4]/div/div/span[1]/a[2]"))).click()
 
-        ###############################
+        WebDriverWait(driver, 90).until(
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[4]/div/div/div[2]/form/div[3]/input[1]"))).click()
+
         time.sleep(30)
 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='top-menu']/div[3]/div[6]/a/div"))).click()
 
         try:
@@ -286,10 +318,9 @@ def webscraping(import_username: str, import_password: str, *_):
             logging.info("Ventana emergente de confirmación aceptada")
         except:
             logging.info("No se encontró ventana emergente de confirmación")
-
     except Exception as e:
         logging.info(e)
-        time.sleep(30)
+        time.sleep(300)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='top-menu']/div[3]/div[6]/a/div"))).click()
 
@@ -301,6 +332,8 @@ def webscraping(import_username: str, import_password: str, *_):
             logging.info("Ventana emergente de confirmación aceptada")
         except:
             logging.info("No se encontró ventana emergente de confirmación")
+
+    time.sleep(5)
 
 
 def extract() -> DataFrame:
@@ -316,11 +349,12 @@ def extract() -> DataFrame:
         file_path_zip = os.path.join(act_dir, 'file')
         file_name = os.listdir(os.path.join(act_dir, 'file'))[0]
         file_name = os.path.join(file_path_zip, file_name)
-        df = pd.read_excel(file_name, header=3)
+        df = pd.read_csv(file_name, header=0, sep='|')
+        print(df.columns)
         os.remove(file_name)
         return df
     except Exception as e:
-        asyncio.run(enviar_mensaje(f'Error tuya_contacto {e}'))
+        asyncio.run(enviar_mensaje(f'Error tuya_whatsapp {e}'))
         logging.info(e)
 
 
@@ -329,16 +363,16 @@ def transform(df: DataFrame) -> DataFrame:
         df.columns = df.columns.str.replace(' ', '_')
 
         # df = df[df['Grabador'].str.contains('sol')]
-        df.columns = [unidecode(x) for x in df.columns if isinstance(x, str)]
+
         df['Fecha_Gestion'] = pd.to_datetime(df["Fecha_Gestion"])
-        df['Fecha_Gestion_Real'] = pd.to_datetime(df["Fecha_Gestion_Real"])
+
         logging.info(df.columns)
-        logging.info(len(df))
+        print(len(df))
 
         return df
 
     except Exception as e:
-        asyncio.run(enviar_mensaje(f'Error tuya_contacto {e}'))
+        asyncio.run(enviar_mensaje(f'Error tuya_whatsapp {e}'))
         logging.info(e)
 
 
@@ -346,31 +380,12 @@ def load(df: DataFrame):
     try:
         with engine_61.get_connect() as conn:
 
-            count = pd.read_sql_query(
-                text(f"SELECT count(*) FROM bbdd_cs_med_tuya.tb_seguimiento_agencia_contacto"), conn)['count(*)'][0]
+            df.to_sql('tb_seguimiento_agencia_whatsapp', con=conn,
+                      if_exists="append", index=False, method=to_sql_replace)
 
-            conn.execute(text(
-                f"delete from bbdd_cs_med_tuya.tb_seguimiento_agencia_contacto limit {count}"))
-
-            logging.info(f"{count} datos en la tabla preproceso")
-
-            df.to_sql('tb_seguimiento_agencia_contacto', con=conn,
-                      if_exists="append", index=False)
-
-            count_ = pd.read_sql_query(
-                text(f"SELECT count(*) FROM bbdd_cs_med_tuya.tb_seguimiento_agencia_contacto"), conn)['count(*)'][0]
-
-            logging.info(
-                f"{len(df)} datos en dataframe - {count_} datos en tabla post-proceso")
-
-            logging.info(first_day_week)
-
-            asyncio.run(enviar_mensaje(
-                f'first day :{first_day_week} \n {len(df)} datos cargados \n {count_} datos en la tabla'))
-
+            asyncio.run(enviar_mensaje(f'{len(df)} datos cargados'))
             asyncio.run(enviar_mensaje(
                 ("____________________________________")))
-
     except Exception as e:
-        asyncio.run(enviar_mensaje(f'Error tuya_canales_autorizados {e}'))
+        asyncio.run(enviar_mensaje(f'Error tuya_whatsapp {e}'))
         logging.info(e)

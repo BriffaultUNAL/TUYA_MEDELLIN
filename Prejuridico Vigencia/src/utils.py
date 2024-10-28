@@ -166,10 +166,10 @@ def webscraping(import_username: str, import_password: str, *_):
             EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div/div[3]/div/div[2]/div[3]/div/div[2]/a[3]"))).click()
 
         WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div/div[3]/div/div[2]/div[3]/div/div/span[1]/a[2]"))).click()
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div/div[3]/div/div[2]/div[3]/div/div/span[1]/a[3]"))).click()
 
         WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div/div[3]/div/div[2]/div[3]/div/div/div[3]/form/div[4]/input[1]"))).click()
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div/div[3]/div/div[2]/div[3]/div/div/div[2]/form/div[3]/input[1]"))).click()
 
         #########################
         time.sleep(30)
@@ -188,7 +188,7 @@ def webscraping(import_username: str, import_password: str, *_):
 
     except Exception as e:
         logging.info(e)
-        time.sleep(10)
+        time.sleep(120)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='top-menu']/div[3]/div[6]/a/div"))).click()
 
@@ -217,7 +217,7 @@ def extract() -> DataFrame:
         file_path_zip = os.path.join(act_dir, 'file')
         file_name = os.listdir(os.path.join(act_dir, 'file'))[0]
         file_name = os.path.join(file_path_zip, file_name)
-        df = pd.read_excel(file_name, header=3)
+        df = pd.read_csv(file_name, header=0, sep='|')
         print(len(df))
         os.remove(file_name)
         return df

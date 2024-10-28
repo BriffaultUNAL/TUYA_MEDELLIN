@@ -164,7 +164,7 @@ def webscraping(import_username: str, import_password: str, *_):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[13]"))).click()
 
-        if int(today.day) == 1:
+        if int(today.day) == 2:
 
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
@@ -178,7 +178,7 @@ def webscraping(import_username: str, import_password: str, *_):
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{last_day}':
+                if day.text == f'{last_day-5}':
                     day.click()
 
             WebDriverWait(driver, 10).until(
@@ -207,14 +207,18 @@ def webscraping(import_username: str, import_password: str, *_):
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{int(today.day)-1}':
+                if day.text == f'{int(today.day)-8}':
                     day.click()
+                """if day.text == f'{today.day}':
+                    day.click()"""
 
             element = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]")))
 
-            action_chains.double_click(element).perform()
-
+            element.click()
+            time.sleep(1)
+            # action_chains.double_click(element).perform()
+            time.sleep(1)
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
 
@@ -230,7 +234,7 @@ def webscraping(import_username: str, import_password: str, *_):
             element = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]")))
 
-            action_chains.double_click(element).perform()
+            # action_chains.double_click(element).perform()
 
             #######################
 

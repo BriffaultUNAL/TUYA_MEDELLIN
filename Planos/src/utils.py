@@ -92,7 +92,7 @@ def transform(df: DataFrame) -> DataFrame:
     try:
         df.columns = df.columns.str.replace(' ', '_')
 
-        df = df.drop('Unnamed:_104', axis=1)
+        # df = df.drop('Unnamed:_104', axis=1)
 
         logging.info(df.columns)
         print(len(df))

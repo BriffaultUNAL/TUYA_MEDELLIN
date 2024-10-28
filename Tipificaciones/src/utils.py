@@ -161,7 +161,7 @@ def webscraping(import_username: str, import_password: str, *_):
             EC.presence_of_element_located((By.ID, "s2id_col"))).click()
 
         WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[55]/div"))).click()
+            EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[57]/div"))).click()
 
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='s2id_ope']/a/span[1]"))).click()
@@ -169,7 +169,7 @@ def webscraping(import_username: str, import_password: str, *_):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[13]"))).click()
 
-        if int(today) == 1:
+        if int(today) == 2:
 
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
@@ -183,7 +183,7 @@ def webscraping(import_username: str, import_password: str, *_):
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{last_day}':
+                if day.text == f'{last_day-8}':
                     day.click()
 
             WebDriverWait(driver, 10).until(
@@ -212,13 +212,17 @@ def webscraping(import_username: str, import_password: str, *_):
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{int(today)-1}':
+                if day.text == f'{int(today)-8}':
                     day.click()
 
             element = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, "//*[@id='ui-datepicker-div']/div[2]/button[2]")))
 
+            time.sleep(1)
+
             action_chains.double_click(element).perform()
+
+            time.sleep(1)
 
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
@@ -258,29 +262,29 @@ def webscraping(import_username: str, import_password: str, *_):
         except Exception as e:
             print(e)
 
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.ID, "add_tab"))).click()
 
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "i.fa-list-alt.fa-4x.colorAzulOscuro"))).click()
 
-        element = WebDriverWait(driver, 30).until(
+        element = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='0']/td[4]")))
 
         action_chains.double_click(element).perform()
 
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div/div[2]/a[3]"))).click()
 
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div/div/span[1]/a[2]"))).click()
 
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div[1]/div[3]/div[2]/div[3]/div/div/div[2]/form/div[3]/input[1]"))).click()
 
         time.sleep(10)
 
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='top-menu']/div[3]/div[6]/a/div"))).click()
 
         try:
@@ -293,7 +297,7 @@ def webscraping(import_username: str, import_password: str, *_):
             logging.info("No se encontró ventana emergente de confirmación")
     except Exception as e:
         logging.info(e)
-        time.sleep(10)
+        time.sleep(120)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='top-menu']/div[3]/div[6]/a/div"))).click()
 

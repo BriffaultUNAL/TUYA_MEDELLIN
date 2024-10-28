@@ -171,6 +171,8 @@ def webscraping(import_username: str, import_password: str, *_):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[1]/div/div[3]/div/div[2]/div[3]/div/div/div[3]/form/div[4]/input[1]"))).click()
 
+        time.sleep(30)
+
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "select2-container"))).click()
 

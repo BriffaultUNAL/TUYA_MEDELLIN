@@ -233,7 +233,7 @@ def webscraping(import_username: str, import_password: str, *_):
 
     except Exception as e:
         logging.info(e)
-        time.sleep(10)
+        time.sleep(120)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='top-menu']/div[3]/div[6]/a/div"))).click()
 
