@@ -169,7 +169,7 @@ def webscraping(import_username: str, import_password: str, *_):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[13]"))).click()
 
-        if int(today) in [1, 2, 3]:
+        if int(today) in [1, 2, 6]:
 
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
@@ -183,7 +183,7 @@ def webscraping(import_username: str, import_password: str, *_):
             days = calendario.find_elements(By.TAG_NAME, "a")
 
             for day in days:
-                if day.text == f'{int(last_day-5)}':
+                if day.text == f'{int(last_day-8)}':
                     day.click()
 
             time.sleep(2)

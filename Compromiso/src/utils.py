@@ -164,7 +164,7 @@ def webscraping(import_username: str, import_password: str, *_):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='select2-drop']/ul/li[13]"))).click()
 
-        if int(today.day) == 2:
+        if int(today.day) == 6:
 
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnCalendario .ui-datepicker-trigger"))).click()
@@ -252,7 +252,7 @@ def webscraping(import_username: str, import_password: str, *_):
 
         action_chains.double_click(element).perform()"""
 
-        time.sleep(2)
+        time.sleep(5)
         try:
             WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a#btnAgregarCriterio .ui-icon-plus"))).click()
